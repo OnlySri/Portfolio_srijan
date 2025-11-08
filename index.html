@@ -177,6 +177,17 @@
             box-shadow: 0 10px 20px rgba(0, 217, 255, 0.3);
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
         /* Sections */
         section {
             padding: 100px 0;
@@ -764,7 +775,8 @@
                 </div>
             </div>
             <div class="contact-form">
-                <form id="contactForm" action="https://formspree.io/f/your-form-id" method="POST">
+                <form id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="f616a182-503f-430d-a263-3535012cf83c">
                     <div class="form-group">
                         <label for="name">Your Name</label>
                         <input type="text" id="name" name="name" class="form-control" required>
@@ -805,11 +817,44 @@
     </footer>
 
     <script>
-        // Simple form submission handler
+        // Web3Forms submission handler
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert('Thank you for your message! I will get back to you soon.');
-            this.reset();
+            
+            const form = this;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Sending...';
+            
+            // Get form data
+            const formData = new FormData(form);
+            
+            // Submit to Web3Forms
+            fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Thank you for your message! I will get back to you soon.');
+                    form.reset();
+                } else {
+                    alert('There was an error sending your message. Please try again or contact me directly via email.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error sending your message. Please try again or contact me directly via email.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+            });
         });
 
         // Mobile menu toggle
