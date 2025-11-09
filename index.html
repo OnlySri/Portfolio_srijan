@@ -7,12 +7,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #00d9ff;
-            --secondary: #7700ff;
+            --primary: #2563eb;
+            --secondary: #f97316;
+            --accent: #dc2626;
             --dark: #0a0a16;
             --darker: #050510;
             --light: #f0f0f5;
-            --gray: #a0a0b0;
+            --gray: #6b7280;
+            --bg-light: #f9fafb;
+            --text-dark: #1e293b;
         }
 
         * {
@@ -23,10 +26,128 @@
         }
 
         body {
-            background-color: var(--darker);
-            color: var(--light);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             line-height: 1.6;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Neural Network Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(249, 115, 22, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.1) 1px, transparent 0),
+                radial-gradient(circle at 25px 25px, rgba(249, 115, 22, 0.08) 1px, transparent 0);
+            background-size: 60px 60px, 80px 80px;
+            z-index: 0;
+            pointer-events: none;
+            animation: drift 20s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+
+        /* Neural Network Canvas */
+        .neural-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(37, 99, 235, 0.03) 2px, rgba(37, 99, 235, 0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(37, 99, 235, 0.03) 2px, rgba(37, 99, 235, 0.03) 4px);
+            background-size: 50px 50px;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(37, 99, 235, 0.6);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 8px rgba(37, 99, 235, 0.8),
+                0 0 16px rgba(37, 99, 235, 0.4),
+                inset 0 0 4px rgba(255, 255, 255, 0.3);
+            animation: nodePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 0.6; 
+                box-shadow: 
+                    0 0 8px rgba(37, 99, 235, 0.8),
+                    0 0 16px rgba(37, 99, 235, 0.4);
+            }
+            50% { 
+                transform: scale(1.8); 
+                opacity: 1; 
+                box-shadow: 
+                    0 0 12px rgba(37, 99, 235, 1),
+                    0 0 24px rgba(37, 99, 235, 0.6),
+                    0 0 36px rgba(37, 99, 235, 0.3);
+            }
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(37, 99, 235, 0.3) 20%,
+                rgba(37, 99, 235, 0.5) 50%,
+                rgba(37, 99, 235, 0.3) 80%,
+                transparent 100%);
+            transform-origin: left center;
+            animation: connectionFlow 4s linear infinite;
+            box-shadow: 0 0 2px rgba(37, 99, 235, 0.4);
+        }
+
+        @keyframes connectionFlow {
+            0% { 
+                opacity: 0.2; 
+                transform: translateX(0);
+            }
+            50% { 
+                opacity: 0.6; 
+            }
+            100% { 
+                opacity: 0.2; 
+            }
         }
 
         .container {
@@ -38,13 +159,13 @@
 
         /* Header & Navigation */
         header {
-            background-color: rgba(5, 5, 16, 0.9);
+            background-color: rgba(249, 250, 251, 0.95);
             position: fixed;
             width: 100%;
             z-index: 1000;
             padding: 20px 0;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            border-bottom: 1px solid rgba(107, 114, 128, 0.1);
         }
 
         nav {
@@ -54,12 +175,25 @@
         }
 
         .logo {
-            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: var(--text-dark);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
         }
 
         .nav-links {
@@ -68,14 +202,15 @@
         }
 
         .nav-links a {
-            color: var(--light);
+            color: var(--text-dark);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
             position: relative;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--primary);
         }
 
@@ -86,11 +221,12 @@
             height: 2px;
             bottom: -5px;
             left: 0;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: var(--primary);
             transition: width 0.3s;
         }
 
-        .nav-links a:hover::after {
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
             width: 100%;
         }
 
@@ -102,61 +238,170 @@
 
         /* Hero Section */
         .hero {
-            padding: 180px 0 100px;
-            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0, 217, 255, 0.1) 0%, rgba(119, 0, 255, 0.05) 70%);
-            top: -250px;
-            right: -250px;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(119, 0, 255, 0.1) 0%, rgba(0, 217, 255, 0.05) 70%);
-            bottom: -150px;
-            left: -150px;
-        }
-
-        .hero-content {
-            max-width: 700px;
+            padding: 150px 0 100px;
+            min-height: 90vh;
             position: relative;
             z-index: 1;
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
+        .hero-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-greeting {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .hero-name {
+            font-size: 4rem;
+            font-weight: 700;
             margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            line-height: 1.2;
+            line-height: 1.1;
         }
 
-        .hero h2 {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            color: var(--gray);
-            font-weight: 400;
+        .hero-name .first-name {
+            color: var(--primary);
         }
 
-        .hero p {
-            font-size: 1.2rem;
+        .hero-name .last-name {
+            color: var(--secondary);
+        }
+
+        .hero-tagline {
+            font-size: 2rem;
             margin-bottom: 40px;
-            color: var(--gray);
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .hero-tagline .tagline-text {
+            color: var(--primary);
+        }
+
+        .hero-tagline .tagline-highlight {
+            color: var(--accent);
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.2em;
+            background-color: var(--accent);
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .btn-resume {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-resume:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .social-links-hero {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link-hero {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .social-link-hero:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-image-wrapper {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .profile-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .btn {
@@ -191,6 +436,8 @@
         /* Sections */
         section {
             padding: 100px 0;
+            position: relative;
+            z-index: 1;
         }
 
         .section-title {
@@ -204,6 +451,7 @@
             display: inline-block;
             position: relative;
             padding-bottom: 15px;
+            color: var(--text-dark);
         }
 
         .section-title h2::after {
@@ -244,11 +492,12 @@
         }
 
         .skill {
-            background: rgba(0, 217, 255, 0.1);
+            background: rgba(37, 99, 235, 0.1);
             padding: 8px 20px;
             border-radius: 20px;
-            border: 1px solid rgba(0, 217, 255, 0.3);
+            border: 1px solid rgba(37, 99, 235, 0.3);
             font-size: 0.9rem;
+            color: var(--text-dark);
         }
 
         /* Experience Section */
@@ -286,11 +535,11 @@
 
         .timeline-content {
             padding: 20px 30px;
-            background: rgba(10, 10, 22, 0.7);
+            background: white;
             border-radius: 10px;
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(37, 99, 235, 0.2);
             position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .timeline-item:nth-child(odd) .timeline-content::after {
@@ -325,11 +574,21 @@
 
         .timeline-content h3 {
             margin-bottom: 10px;
-            color: var(--light);
+            color: var(--text-dark);
         }
 
         .timeline-content p {
             color: var(--gray);
+        }
+
+        .timeline-content ul {
+            color: var(--gray);
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .timeline-content li {
+            margin-bottom: 5px;
         }
 
         /* Projects Section */
@@ -340,16 +599,16 @@
         }
 
         .project-card {
-            background: rgba(10, 10, 22, 0.7);
+            background: white;
             border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(37, 99, 235, 0.2);
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .project-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 217, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.2);
         }
 
         .project-img {
@@ -384,11 +643,12 @@
         }
 
         .tech-tag {
-            background: rgba(119, 0, 255, 0.2);
+            background: rgba(249, 115, 22, 0.2);
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 0.8rem;
-            border: 1px solid rgba(119, 0, 255, 0.4);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            color: var(--text-dark);
         }
 
         /* Contact Section */
@@ -423,7 +683,7 @@
 
         .contact-text h3 {
             margin-bottom: 5px;
-            color: var(--light);
+            color: var(--text-dark);
         }
 
         .contact-text p {
@@ -431,10 +691,11 @@
         }
 
         .contact-form {
-            background: rgba(10, 10, 22, 0.7);
+            background: white;
             padding: 30px;
             border-radius: 10px;
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .form-group {
@@ -444,22 +705,23 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--light);
+            color: var(--text-dark);
         }
 
         .form-control {
             width: 100%;
             padding: 12px 15px;
-            background: rgba(5, 5, 16, 0.7);
-            border: 1px solid rgba(0, 217, 255, 0.3);
+            background: var(--bg-light);
+            border: 1px solid rgba(37, 99, 235, 0.3);
             border-radius: 5px;
-            color: var(--light);
+            color: var(--text-dark);
             font-size: 1rem;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
+            background: white;
         }
 
         textarea.form-control {
@@ -469,9 +731,11 @@
 
         /* Footer */
         footer {
-            background: rgba(5, 5, 16, 0.9);
+            background: rgba(249, 250, 251, 0.95);
             padding: 50px 0 20px;
-            border-top: 1px solid rgba(0, 217, 255, 0.2);
+            border-top: 1px solid rgba(107, 114, 128, 0.1);
+            position: relative;
+            z-index: 1;
         }
 
         .footer-content {
@@ -490,30 +754,45 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(0, 217, 255, 0.1);
+            background: rgba(37, 99, 235, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--light);
+            color: var(--primary);
             text-decoration: none;
             transition: background 0.3s, transform 0.3s;
         }
 
         .social-link:hover {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
             transform: translateY(-5px);
         }
 
         .copyright {
             text-align: center;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(107, 114, 128, 0.1);
             color: var(--gray);
             font-size: 0.9rem;
         }
 
         /* Responsive Design */
         @media (max-width: 992px) {
+            .hero-wrapper {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-image {
+                order: -1;
+            }
+
+            .profile-image-wrapper {
+                width: 300px;
+                height: 300px;
+            }
+
             .about-content, .contact-content {
                 grid-template-columns: 1fr;
             }
@@ -548,12 +827,32 @@
                 display: block;
             }
             
-            .hero h1 {
+            .hero-name {
                 font-size: 2.5rem;
             }
             
-            .hero h2 {
+            .hero-tagline {
                 font-size: 1.5rem;
+            }
+
+            .hero-greeting {
+                font-size: 1.2rem;
+            }
+
+            .profile-image-wrapper {
+                width: 250px;
+                height: 250px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-primary,
+            .btn-resume {
+                width: 100%;
+                justify-content: center;
             }
             
             .section-title h2 {
@@ -572,15 +871,22 @@
     </style>
 </head>
 <body>
+    <!-- Neural Network Background -->
+    <div class="neural-bg" id="neuralBg"></div>
+    
     <!-- Header & Navigation -->
     <header>
         <div class="container">
             <nav>
-                <div class="logo">SRIJAN RIJAL</div>
+                <div class="logo">
+                    <div class="logo-icon">SR</div>
+                    <span>Srijan</span>
+                </div>
                 <div class="nav-links">
-                    <a href="#home">Home</a>
+                    <a href="#home" class="active">Home</a>
                     <a href="#about">About</a>
                     <a href="#experience">Experience</a>
+                    <a href="#education">Education</a>
                     <a href="#projects">Projects</a>
                     <a href="#contact">Contact</a>
                 </div>
@@ -594,11 +900,48 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="container">
-            <div class="hero-content">
-                <h1>Computer Science Student & Developer</h1>
-                <h2>Python | Machine Learning | Web Development</h2>
-                <p>Detail-oriented and motivated Computer Science undergraduate with a strong foundation in Python, Machine Learning, Web Development, and Quality Assurance. Eager to apply technical knowledge and problem-solving skills in Data Science, Software Development, or QA Engineering.</p>
-                <a href="#contact" class="btn">Get In Touch</a>
+            <div class="hero-wrapper">
+                <div class="hero-content">
+                    <div class="hero-greeting">Hi There,</div>
+                    <h1 class="hero-name">
+                        I'm <span class="first-name">Srijan</span> <span class="last-name">Rijal</span>
+                    </h1>
+                    <div class="hero-tagline">
+                        I'm Into <span class="tagline-text">Data</span><span class="tagline-highlight">|</span><span class="typing-cursor"></span>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#about" class="btn-primary">
+                            About Me
+                            <i class="fas fa-arrow-down"></i>
+                        </a>
+                        <a href="#resume" class="btn-resume" id="resumeLink">
+                            <i class="fas fa-file-pdf"></i>
+                            Resume
+                        </a>
+                    </div>
+                    <div class="social-links-hero">
+                        <a href="https://www.linkedin.com/in/srijan-rijal-264a64259/" target="_blank" class="social-link-hero" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://github.com/OnlySri" target="_blank" class="social-link-hero" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://twitter.com" target="_blank" class="social-link-hero" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://t.me" target="_blank" class="social-link-hero" title="Telegram">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="social-link-hero" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="profile-image-wrapper">
+                        <img src="WhatsApp Image 2025-11-08 at 20.09.36_f299f34d.jpg" alt="Srijan Rijal">
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -642,11 +985,11 @@
         </div>
     </section>
 
-    <!-- Experience Section -->
+    <!-- Experience & Training Section -->
     <section id="experience" class="experience">
         <div class="container">
             <div class="section-title">
-                <h2>Experience & Education</h2>
+                <h2>Experience & Training</h2>
             </div>
             <div class="timeline">
                 <div class="timeline-item">
@@ -661,6 +1004,25 @@
                         </ul>
                     </div>
                 </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Training</div>
+                        <h3>MERN Stack Training</h3>
+                        <p>Broadway Infosys Ltd</p>
+                        <p>Comprehensive training in MongoDB, Express.js, React.js, and Node.js for full-stack web development</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="education">
+        <div class="container">
+            <div class="section-title">
+                <h2>Education</h2>
+            </div>
+            <div class="timeline">
                 <div class="timeline-item">
                     <div class="timeline-content">
                         <div class="timeline-date">2023 – Present</div>
@@ -817,6 +1179,62 @@
     </footer>
 
     <script>
+        // Neural Network Background Generation
+        function createNeuralNetwork() {
+            const neuralBg = document.getElementById('neuralBg');
+            const nodes = [];
+            const nodeCount = 30;
+            const connectionDistance = 200;
+            
+            // Create nodes
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                node.style.left = x + '%';
+                node.style.top = y + '%';
+                node.style.animationDelay = Math.random() * 3 + 's';
+                neuralBg.appendChild(node);
+                nodes.push({ element: node, x: x, y: y });
+            }
+            
+            // Create connections between nearby nodes
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = (nodes[j].x - nodes[i].x) * window.innerWidth / 100;
+                    const dy = (nodes[j].y - nodes[i].y) * window.innerHeight / 100;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < connectionDistance) {
+                        const connection = document.createElement('div');
+                        connection.className = 'neural-connection';
+                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                        connection.style.width = distance + 'px';
+                        connection.style.left = nodes[i].x + '%';
+                        connection.style.top = nodes[i].y + '%';
+                        connection.style.transform = `rotate(${angle}deg)`;
+                        connection.style.animationDelay = Math.random() * 4 + 's';
+                        neuralBg.appendChild(connection);
+                    }
+                }
+            }
+        }
+        
+        // Initialize neural network on page load
+        window.addEventListener('load', createNeuralNetwork);
+        
+        // Recreate neural network on resize
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                const neuralBg = document.getElementById('neuralBg');
+                neuralBg.innerHTML = '';
+                createNeuralNetwork();
+            }, 250);
+        });
+
         // Web3Forms submission handler
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -878,6 +1296,58 @@
                     });
                 }
             });
+        });
+
+        // Typing animation for tagline
+        const taglineTexts = ['Data', 'Machine Learning', 'Web Development', 'Python'];
+        let currentTextIndex = 0;
+        let currentCharIndex = 0;
+        let isDeleting = false;
+        const taglineElement = document.querySelector('.tagline-text');
+        const typingSpeed = 100;
+        const deletingSpeed = 50;
+        const pauseTime = 2000;
+
+        function typeText() {
+            const currentText = taglineTexts[currentTextIndex];
+            
+            if (isDeleting) {
+                taglineElement.textContent = currentText.substring(0, currentCharIndex - 1);
+                currentCharIndex--;
+                
+                if (currentCharIndex === 0) {
+                    isDeleting = false;
+                    currentTextIndex = (currentTextIndex + 1) % taglineTexts.length;
+                    setTimeout(typeText, 500);
+                    return;
+                }
+                
+                setTimeout(typeText, deletingSpeed);
+            } else {
+                taglineElement.textContent = currentText.substring(0, currentCharIndex + 1);
+                currentCharIndex++;
+                
+                if (currentCharIndex === currentText.length) {
+                    isDeleting = true;
+                    setTimeout(typeText, pauseTime);
+                    return;
+                }
+                
+                setTimeout(typeText, typingSpeed);
+            }
+        }
+
+        // Start typing animation after page load
+        if (taglineElement) {
+            setTimeout(typeText, 1000);
+        }
+
+        // Resume link handler - Update this with your actual resume URL
+        document.getElementById('resumeLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Replace with your actual resume URL or file path
+            const resumeUrl = 'resume.pdf'; // Change this to your resume file path or URL
+            window.open(resumeUrl, '_blank');
         });
     </script>
 </body>
