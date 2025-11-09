@@ -914,7 +914,7 @@
                             About Me
                             <i class="fas fa-arrow-down"></i>
                         </a>
-                        <a href="Srijan_Rijal_Professional_CV.pdf" class="btn-resume" id="resumeLink">
+                        <a href="Srijan_Rijal_Professional_CV.pdf" class="btn-resume" id="resumeLink" target="_blank">
                             <i class="fas fa-file-pdf"></i>
                             Resume
                         </a>
@@ -1342,12 +1342,9 @@
             setTimeout(typeText, 1000);
         }
 
-        // Resume link handler - Update this with your actual resume URL
+        // Resume link handler - already set in href, this is just for additional handling if needed
         document.getElementById('resumeLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Replace with your actual resume URL or file path
-            const resumeUrl = 'resume.pdf'; // Change this to your resume file path or URL
-            window.open(resumeUrl, '_blank');
+            // Link will open directly via href attribute
         });
     </script>
 </body>
